@@ -94,7 +94,7 @@ export default function SettingsScreen() {
           <View style={styles.row}>
             <Ionicons name="information-circle-outline" size={20} color={colors.text.secondary} />
             <Text style={[styles.rowText, { color: colors.text.primary }]}>Version</Text>
-            <Text style={[styles.rowValue, { color: colors.text.tertiary }]}>1.2.0</Text>
+            <Text style={[styles.rowValue, { color: colors.text.tertiary }]}>1.3.0</Text>
           </View>
         </View>
 

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { View, Text, FlatList, StyleSheet } from 'react-native'
+import { View, Text, FlatList, StyleSheet, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useTheme } from '../src/theme'
 import { getAllTemplates, deleteTemplate } from '../src/stores'
 import { Button, PressableScale } from '../src/components/ui'
+import { usePremium } from '../src/services/premiumGate'
+import { checkPremiumStatus } from '../src/services/subscriptions'
 import type { Template as FocusTemplate } from '../src/types'
 
 const TEMPLATE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -22,6 +24,7 @@ const TEMPLATE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 export default function TemplatesScreen() {
   const router = useRouter()
   const { colors, spacing } = useTheme()
+  const { isPremium } = usePremium()
   const [templates, setTemplates] = useState<FocusTemplate[]>([])
 
   useEffect(() => {
@@ -52,8 +55,11 @@ export default function TemplatesScreen() {
           <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
         </PressableScale>
         <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Templates</Text>
-        <PressableScale onPress={() => router.push('/create-template')}>
-          <Ionicons name="add" size={24} color={colors.accent.primary} />
+        <PressableScale onPress={() => {
+          if (!isPremium) { router.push('/paywall'); return }
+          router.push('/create-template')
+        }}>
+          <Ionicons name="add" size={24} color={isPremium ? colors.accent.primary : colors.text.tertiary} />
         </PressableScale>
       </View>
 
