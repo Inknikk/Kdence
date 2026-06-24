@@ -1,5 +1,6 @@
 import { getDatabase } from '../db'
 import { generateId } from '../utils'
+import { captureEvent, AnalyticsEvents } from '../services/analytics'
 import type { FocusSession, SessionTask } from '../types'
 
 const db = getDatabase()
@@ -35,6 +36,8 @@ export async function createSession(taskNames: { name: string; duration: number;
       order: i,
     })
   }
+
+  captureEvent(AnalyticsEvents.SESSION_STARTED, { taskCount: taskNames.length })
 
   return { id, startedAt: now, completedAt: null, tasks, status: 'active' }
 }
@@ -104,8 +107,10 @@ export async function completeCurrentTask(sessionId: string): Promise<FocusSessi
       'UPDATE sessions SET status = ?, completedAt = ? WHERE id = ?',
       'completed', now, sessionId
     )
+    captureEvent(AnalyticsEvents.SESSION_COMPLETED, { taskCount: session.tasks.length })
   }
 
+  captureEvent(AnalyticsEvents.TASK_COMPLETED, { taskName: activeTask.taskName })
   const updated = await getSession(sessionId)
   return updated!
 }
