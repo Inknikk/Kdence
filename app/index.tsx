@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, FlatList, StyleSheet } from 'react-native'
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter, useFocusEffect } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useTheme } from '../src/theme'
 import { Button, TaskCard, PressableScale } from '../src/components/ui'
-import { getAllTasks, createTask } from '../src/stores/taskStore'
+import { getAllTasks, createTask, reorderTasks } from '../src/stores/taskStore'
 import { createSession, getActiveSession } from '../src/stores/sessionStore'
+import { impactLight } from '../src/services/haptics'
 import type { Task } from '../src/types'
 
 const DEFAULT_BREAKS = [
@@ -48,9 +49,7 @@ export default function HomeScreen() {
   }
 
   async function handleAddTask() {
-    const maxOrder = tasks.length > 0 ? Math.max(...tasks.map(t => t.order)) : 0
-    const task = await createTask('New task', 25, false, maxOrder + 1)
-    setTasks(prev => [...prev, task])
+    router.push('/edit-task?id=new')
   }
 
   async function handleStartSession() {
@@ -123,13 +122,51 @@ export default function HomeScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: spacing.lg }}
         renderItem={({ item, index }) => (
-          <TaskCard
-            name={item.name}
-            duration={item.estimatedDuration}
-            isBreak={item.isBreak}
-            isActive={index === 0}
-            isNext={index === 1}
-          />
+          <View style={styles.taskRow}>
+            <TouchableOpacity
+              onPress={() => router.push(`/edit-task?id=${item.id}`)}
+              style={{ flex: 1 }}
+              activeOpacity={0.7}
+            >
+              <TaskCard
+                name={item.name}
+                duration={item.estimatedDuration}
+                isBreak={item.isBreak}
+                isActive={index === 0}
+                isNext={index === 1}
+              />
+            </TouchableOpacity>
+            <View style={styles.reorderCol}>
+              <PressableScale
+                onPress={async () => {
+                  if (index === 0) return
+                  const reordered = [...tasks]
+                  const temp = reordered[index]
+                  reordered[index] = reordered[index - 1]
+                  reordered[index - 1] = temp
+                  await reorderTasks(reordered.map(t => t.id))
+                  setTasks(reordered)
+                  impactLight()
+                }}
+              >
+                <Ionicons name="chevron-up" size={18} color={colors.text.tertiary} />
+              </PressableScale>
+              <PressableScale
+                onPress={async () => {
+                  if (index === tasks.length - 1) return
+                  const reordered = [...tasks]
+                  const temp = reordered[index]
+                  reordered[index] = reordered[index + 1]
+                  reordered[index + 1] = temp
+                  await reorderTasks(reordered.map(t => t.id))
+                  setTasks(reordered)
+                  impactLight()
+                }}
+              >
+                <Ionicons name="chevron-down" size={18} color={colors.text.tertiary} />
+              </PressableScale>
+            </View>
+          </View>
         )}
         refreshing={loading}
         onRefresh={loadTasks}
@@ -189,4 +226,11 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', gap: 12 },
   emptyText: { fontSize: 15, textAlign: 'center' },
   footer: {},
+  taskRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    marginBottom: 0,
+  },
+  reorderCol: {
+    gap: 2, paddingLeft: 6,
+  },
 })

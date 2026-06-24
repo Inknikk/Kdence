@@ -2,10 +2,10 @@
   "expo": {
     "name": "Kdence",
     "slug": "Kdence",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "scheme": "kdence",
     "ios": {
       "supportsTablet": true,
@@ -27,7 +27,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#4A90D9"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
