@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "run": "npx expo start",
+  "skills": {
+    "paths": [
+      "C:\\Users\\nikk\\Projects\\Agent Skills\\moreskills",
+      "C:\\Users\\nikk\\.config\\opencode\\skills"
+    ]
+  }
+}
