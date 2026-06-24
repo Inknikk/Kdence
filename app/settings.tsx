@@ -82,10 +82,10 @@ export default function SettingsScreen() {
 
         <Text style={[styles.sectionLabel, { color: colors.text.tertiary }]}>ACCOUNT</Text>
         <View style={[styles.section, { backgroundColor: colors.surface.secondary }]}>
-          <PressableScale style={styles.row}>
+          <PressableScale onPress={() => router.push('/account')} style={styles.row}>
             <Ionicons name="cloud-outline" size={20} color={colors.text.secondary} />
-            <Text style={[styles.rowText, { color: colors.text.primary }]}>Cloud Sync</Text>
-            <Text style={[styles.rowValue, { color: colors.text.tertiary }]}>Coming Soon</Text>
+            <Text style={[styles.rowText, { color: colors.text.primary }]}>Cloud Sync & Account</Text>
+            <Ionicons name="chevron-forward" size={18} color={colors.text.tertiary} />
           </PressableScale>
         </View>
 
@@ -94,7 +94,7 @@ export default function SettingsScreen() {
           <View style={styles.row}>
             <Ionicons name="information-circle-outline" size={20} color={colors.text.secondary} />
             <Text style={[styles.rowText, { color: colors.text.primary }]}>Version</Text>
-            <Text style={[styles.rowValue, { color: colors.text.tertiary }]}>1.0.0</Text>
+            <Text style={[styles.rowValue, { color: colors.text.tertiary }]}>1.2.0</Text>
           </View>
         </View>
 
